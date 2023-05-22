@@ -1,25 +1,29 @@
-import get from './getElement.js';
-import removeActive from './removeActive.js';
+const URL = 'https://randomuser.me/api/';
 
-const img = get('.user-img');
-const title = get('.user-title');
-const value = get('.user-value');
-const btns = [...document.querySelectorAll('.icon')];
-const displayUser = (person) => {
-    img.src = person.image;
-    value.textContent = person.name;
-    title.textContent = `My name is`;
-    removeActive(btns);
-    btns[0].classList.remove('active');
-    btns.forEach((btn) => {
-        const label = btn.dataset.label;
-        btn.addEventListener('click', () => {
-            title.textContent = `My ${label} is`;
-            value.textContent = person[label];
-            removeActive(btns);
-            btn.classList.add('active');
-        });
-    });
+const getUser = async () => {
+  const response = await fetch(URL);
+  const data = await response.json();
+  // destructure
+  const person = data.results[0];
+  const { phone, email } = person;
+  const { large: image } = person.picture;
+  const { password } = person.login;
+  const { first, last } = person.name;
+  const {
+    dob: { age },
+  } = person;
+  const {
+    street: { number, name },
+  } = person.location;
+  return {
+    image,
+    phone,
+    email,
+    password,
+    age,
+    street: `${number} ${name}`,
+    name: `${first} ${last}`,
+  };
 };
 
-export default displayUser;
+export default getUser;
